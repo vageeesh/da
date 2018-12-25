@@ -1,0 +1,102 @@
+getwd()
+library(tm)
+library(SnowballC)
+library(stringr)
+library(wordcloud)
+library(RTextTools)
+text<-readLines(file.choose())
+doc<-Corpus(VectorSource(text))
+doc<-tm_map(doc,removeWords,stopwords('english'))
+doc<-tm_map(doc,removeNumbers)
+doc<-tm_map(doc,stripWhitespace)
+doc<-tm_map(doc,removePunctuation)
+doc<-tm_map(doc,stemDocument)
+dts<-TermDocumentMatrix(doc)
+dts<-as.matrix(dts)
+v<-sort(rowSums(dts))
+d<-data.frame(word=names(v),freq=v)
+wordcloud(d$word,freq = d$freq,min.freq = 1,max.words = 30,random.order = FALSE,rot.per = 0.35)
+
+
+
+getwd()
+library(igraph)
+g<-graph(c("a","b","b","c","c","d","d","b"),n=5,directed = TRUE)
+plot(g,vertex.color="blue",vertex.size=4,edge.color="red")
+
+g[]
+degree(g,mode="all")
+degree(g,mode="in")
+degree(g,mode="out")
+closeness(g,mode="all",weights = NULL)
+betweenness(g,directed = TRUE,weights = NULL)
+edge.betweenness(g,directed = TRUE,weights = NULL)
+cliques(g,min=NULL,max = NULL)
+clique.number(g)
+clique_num(g)
+transitivity(g)
+components(g, mode = c("weak","strong"))
+plot(g)
+neighborhood.size(g)
+cohesive.blocks(g)
+
+
+getwd()
+library(tm)
+library(SnowballC)
+library(stringr)
+library(wordcloud)
+library(RTextTools)
+
+text<-readLines("apple_reviews.txt")
+text<-tolower(text)
+text<-removeNumbers(text)
+text<-removePunctuation(text)
+textbag<-str_split(text,pattern = "\\s+")
+textbag
+class(textbag)
+textbag<-unlist(textbag)
+
+passwords<-readLines("postive-words.txt")
+passscore<-sum(!is.na(match(textbag,passwords)))
+passscore
+negwords<-readLines("negative-words.txt")
+negscore<-sum(!is.na(match(textbag,negwords)))
+negscore
+if(passscore > negscore) {
+  print("Positive high")
+}else{
+  print("negetive score")
+}
+
+score<-abs(passscore - negscore)
+score
+
+
+ data1 = LOAD '/home/vageesh/Downloads/Data Analytics/Pig_Hive.csv' USING PigStorage(',') AS(mid:int,title:chararray,uid:int,rating:float,gid:int,rec:chararray,as:int);
+
+query1a = group data1 by mid;
+query1 = foreach query1a generate data1.mid,data1.rating;
+
+query2 = filter query1a by $0 == 984;
+
+query3 = FILTER data1 by rating is not NULL;
+
+query4 =FILTER data1 by rating is not null;
+query4a = FOREACH query4 GENERATE $0;
+
+
+query5 = FOREACH query1a generate MAX(data1.rating),MIN(data1.rating),AVG(data1.rating);
+
+
+//hive
+
+create table table1(mid int,title string,uid int,rat float,gid int,rec string,activity int) row format delimited fields terminated by ',';./hadoop-daemon.sh start datanode
+load data inpath '/Pig_Hive.csv' into table1; 
+
+select uid,mid,case when gid>0 then gid else -1 end gid,case rec when 'Y' then 1 else 0 end rec,activity from table1 where activity in(2,4,5);
+
+insert overwrite table table2 select * from(select mid,uid,case when gid>0 then gid else -1 end, case rec when 'Y' then 1 else 0 end,activity from table1 where activity in(2,4,5) limit 25)union_result;
+
+
+
