@@ -1,0 +1,74 @@
+getwd()
+library(tm)
+library(SnowballC)
+library(stringr)
+library(wordcloud)
+library(RTextTools)
+text<-readLines(file.choose())
+doc<-Corpus(VectorSource(text))
+doc<-tm_map(doc,removeWords,stopwords('english'))
+doc<-tm_map(doc,removeNumbers)
+doc<-tm_map(doc,stripWhitespace)
+doc<-tm_map(doc,removePunctuation)
+doc<-tm_map(doc,stemDocument)
+dts<-TermDocumentMatrix(doc)
+dts<-as.matrix(dts)
+v<-sort(rowSums(dts))
+d<-data.frame(word=names(v),freq=v)
+wordcloud(d$word,freq = d$freq,min.freq = 1,max.words = 30,random.order = FALSE,rot.per = 0.35)
+
+
+
+getwd()
+library(igraph)
+g<-graph(c("a","b","b","c","c","d","d","b"),n=5,directed = TRUE)
+plot(g,vertex.color="blue",vertex.size=4,edge.color="red")
+
+g[]
+degree(g,mode="all")
+degree(g,mode="in")
+degree(g,mode="out")
+closeness(g,mode="all",weights = NULL)
+betweenness(g,directed = TRUE,weights = NULL)
+edge.betweenness(g,directed = TRUE,weights = NULL)
+cliques(g,min=NULL,max = NULL)
+clique.number(g)
+clique_num(g)
+transitivity(g)
+components(g, mode = c("weak","strong"))
+plot(g)
+neighborhood.size(g)
+cohesive.blocks(g)
+
+
+getwd()
+library(tm)
+library(SnowballC)
+library(stringr)
+library(wordcloud)
+library(RTextTools)
+
+text<-readLines("apple_reviews.txt")
+text<-tolower(text)
+text<-removeNumbers(text)
+text<-removePunctuation(text)
+textbag<-str_split(text,pattern = "\\s+")
+textbag
+class(textbag)
+textbag<-unlist(textbag)
+
+passwords<-readLines("postive-words.txt")
+passscore<-sum(!is.na(match(textbag,passwords)))
+passscore
+negwords<-readLines("negative-words.txt")
+negscore<-sum(!is.na(match(textbag,negwords)))
+negscore
+if(passscore > negscore) {
+  print("Positive high")
+}else{
+  print("negetive score")
+}
+
+score<-abs(passscore - negscore)
+score
+
